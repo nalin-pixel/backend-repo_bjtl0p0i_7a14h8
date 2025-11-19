@@ -11,22 +11,45 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, HttpUrl
+from typing import Optional, List
 
-# Example schemas (replace with your own):
+# Web3 Dapp discovery platform schemas
 
 class User(BaseModel):
     """
     Users collection schema
     Collection name: "user" (lowercase of class name)
     """
-    name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
+    name: str = Field(..., description="Display name")
+    wallet_address: Optional[str] = Field(None, description="EVM wallet address or other chain address")
+    avatar_url: Optional[str] = Field(None, description="Avatar image URL")
 
+class Dapp(BaseModel):
+    """A decentralized application listed on the platform"""
+    name: str = Field(..., description="Project name")
+    tagline: str = Field(..., description="Short one-line description")
+    description: Optional[str] = Field(None, description="Longer description of the project")
+    website: Optional[HttpUrl] = Field(None, description="Project website")
+    twitter: Optional[str] = Field(None, description="Twitter/X handle or link")
+    github: Optional[str] = Field(None, description="GitHub repo link")
+    category: Optional[str] = Field(None, description="Category like DeFi, NFT, Tooling, Infra, Gaming")
+    chains: List[str] = Field(default_factory=list, description="Supported chains")
+    tags: List[str] = Field(default_factory=list, description="Extra tags")
+    logo_url: Optional[str] = Field(None, description="Logo image URL")
+    banner_url: Optional[str] = Field(None, description="Cover image URL")
+    submitter_name: Optional[str] = Field(None, description="Name of submitter")
+    submitter_wallet: Optional[str] = Field(None, description="Submitter wallet address")
+    votes: int = Field(0, ge=0, description="Upvote count")
+
+class Comment(BaseModel):
+    """Comments on a Dapp"""
+    dapp_id: str = Field(..., description="Related dapp id")
+    author_name: Optional[str] = Field(None, description="Commenter name")
+    author_wallet: Optional[str] = Field(None, description="Commenter wallet address")
+    content: str = Field(..., min_length=1, max_length=1000, description="Comment text")
+
+# Example schemas kept for reference
 class Product(BaseModel):
     """
     Products collection schema
